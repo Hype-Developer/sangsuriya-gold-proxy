@@ -32,11 +32,20 @@ curl_setopt_array($ch, [
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $error = curl_error($ch);
+$effectiveUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 curl_close($ch);
+
+error_log("GOLD_PROXY: url=$url httpCode=$httpCode error=$error effectiveUrl=$effectiveUrl");
 
 if ($error) {
     http_response_code(502);
-    echo json_encode(['error' => 'Upstream connection failed: ' . $error]);
+    echo json_encode(['error' => 'Upstream connection failed: ' . $error, 'url' => $url]);
+    exit;
+}
+
+if ($httpCode !== 200) {
+    http_response_code($httpCode);
+    echo json_encode(['error' => 'Upstream returned ' . $httpCode, 'url' => $url, 'body' => substr($response, 0, 500)]);
     exit;
 }
 
