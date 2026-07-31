@@ -4,5 +4,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends libcurl4-openss
 RUN docker-php-ext-install curl
 
 COPY index.php /var/www/html/index.php
+COPY silver.php /var/www/html/silver.php
 
 EXPOSE 80
